@@ -12,6 +12,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform visual;
     [SerializeField] private Transform shadowVisual;
 
+    [SerializeField] private CinemachineImpulseSource pickupShake;
+    [SerializeField] private CinemachineImpulseSource dieShake;
+
+    [SerializeField] private ParticleSystem jumpParticle;
+    [SerializeField] private ParticleSystem dieParticle;
+
     [SerializeField] private Vector2 shadowInitialOffset = new Vector2(0.08f, -0.08f);
 
     [SerializeField] private float jumpCooldown = 0.5f;
@@ -19,6 +25,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
 
     private float timeSinceLastJump = 0;
+
+    public bool isDead { private set; get; } = false;
 
     private Vector2 initialPos;
 
@@ -43,10 +51,22 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (GameController.instance.isPaused) return;
+
+        if (isDead)
+        {
+            if (Input.GetKeyDown(KeyCode.Space) && GameController.instance.canRestart)
+            {
+                Respawn();
+            }
+
+            return;
+        }
+
         accelarationInput = Input.GetAxisRaw("Vertical");
         steeringInput = Input.GetAxisRaw("Horizontal");
 
-        if (Input.GetKeyDown(KeyCode.Space) && timeSinceLastJump >= jumpCooldown)
+        if (Input.GetKeyDown(KeyCode.Space) && timeSinceLastJump >= jumpCooldown && !isDead && !GameController.instance.isPaused)
         {
             StartCoroutine(Jump());
             timeSinceLastJump = 0;
@@ -57,6 +77,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isDead || GameController.instance.isPaused) return;
+
         ApplyEngineForce();
 
         KillOrthogonalVelocity();
@@ -133,6 +155,22 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.TryGetComponent(out Pickup pickup))
+        {
+            pickupShake.GenerateImpulse();
+            pickup.Pick();
+        }
+
+        if (collision.transform.parent.TryGetComponent(out Enemy enemy))
+        {
+            if (enemy.destroyOnCollision)
+                Destroy(enemy.gameObject);
+            Die();
+        }
+    }
+
     private bool isJumping = false;
 
     private IEnumerator Jump()
@@ -150,6 +188,7 @@ public class PlayerController : MonoBehaviour
 
         yield return new WaitForSeconds(0.1f);
 
+        jumpParticle.Play();
         IgnoreLayersOnJump(false);
         isJumping = false;
     }
@@ -158,5 +197,34 @@ public class PlayerController : MonoBehaviour
     {
         Physics2D.IgnoreLayerCollision(3, 7, ignore); // Pickup layer
         Physics2D.IgnoreLayerCollision(3, 8, ignore); // Enemy layer
+    }
+
+    private void Die()
+    {
+        if (isDead) return;
+
+        rb.velocity = Vector2.zero;
+        accelarationInput = 0;
+        steeringInput = 0;
+
+        isDead = true;
+        visual.GetComponent<SpriteRenderer>().enabled = false;
+        shadowVisual.GetComponent<SpriteRenderer>().enabled = false;
+        dieShake.GenerateImpulse();
+        dieParticle.Play();
+
+        GameController.instance.GameOver();
+    }
+
+    private void Respawn()
+    {
+        transform.position = initialPos;
+        rotationAngle = 0f;
+
+        visual.GetComponent<SpriteRenderer>().enabled = true;
+        shadowVisual.GetComponent<SpriteRenderer>().enabled = true;
+
+        isDead = false;
+        GameController.instance.Restart();
     }
 }
