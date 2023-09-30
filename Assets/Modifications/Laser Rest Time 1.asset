@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c18970f2cbee32449742ddab55d9eed, type: 3}
+  m_Name: Laser Rest Time 1
+  m_EditorClassIdentifier: 
+  Modification:
+    rid: 2045061530332430338
+  references:
+    version: 2
+    RefIds:
+    - rid: 2045061530332430338
+      type: {class: ModifyLaserRestTime, ns: , asm: Assembly-CSharp}
+      data:
+        unlockedModifications:
+        - {fileID: 11400000, guid: f1381b6de01b74645978670ab79fbceb, type: 2}
+        description: 'Laser rest time <color=#e43b44>3s</color> => <color=#e43b44>0.5s</color> '
+        restTime: 0.5

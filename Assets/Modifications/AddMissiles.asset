@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c18970f2cbee32449742ddab55d9eed, type: 3}
+  m_Name: AddMissiles
+  m_EditorClassIdentifier: 
+  Modification:
+    rid: 2045061530332430337
+  references:
+    version: 2
+    RefIds:
+    - rid: 2045061530332430337
+      type: {class: AddEnemy, ns: , asm: Assembly-CSharp}
+      data:
+        unlockedModifications:
+        - {fileID: 11400000, guid: c9b3bd977d264014ebe6df274b6a3ac1, type: 2}
+        gameEntity: {fileID: 4179284299969201531, guid: d220245bd08189e418abed4108a8ece6, type: 3}
